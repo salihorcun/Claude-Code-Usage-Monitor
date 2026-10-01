@@ -1333,6 +1333,8 @@ pub struct ThemeRuntime {
     pub floating_card_opacity: u8,
     host_width: u32,
     host_height: u32,
+    idle_count: u32,
+    idle_running_count: u32,
 }
 
 impl Default for ThemeRuntime {
@@ -1347,6 +1349,8 @@ impl Default for ThemeRuntime {
             floating_card_opacity: 85,
             host_width: default_canvas_width(),
             host_height: default_canvas_height(),
+            idle_count: 0,
+            idle_running_count: 0,
         }
     }
 }
@@ -1377,6 +1381,8 @@ impl ThemeRuntime {
             floating_card_opacity: 85,
             host_width: default_canvas_width(),
             host_height: default_canvas_height(),
+            idle_count: 0,
+            idle_running_count: 0,
         }
     }
 
@@ -1412,6 +1418,12 @@ impl ThemeRuntime {
     pub fn with_host_dimensions(mut self, width: u32, height: u32) -> Self {
         self.host_width = width.max(1);
         self.host_height = height.max(1);
+        self
+    }
+
+    pub fn with_idle_state(mut self, idle_count: u32, running_count: u32) -> Self {
+        self.idle_count = idle_count;
+        self.idle_running_count = running_count;
         self
     }
 
@@ -1475,6 +1487,9 @@ impl DataContext {
         context.insert_string("i18n.minute_suffix", strings.minute_suffix);
         context.insert_string("i18n.second_suffix", strings.second_suffix);
         context.insert("providers.count", runtime.provider_count() as f64);
+        context.insert("idle.count", runtime.idle_count as f64);
+        context.insert("idle.running", runtime.idle_running_count as f64);
+        context.insert("idle.active", (runtime.idle_count > 0) as u8 as f64);
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map(|value| value.as_secs_f64())
