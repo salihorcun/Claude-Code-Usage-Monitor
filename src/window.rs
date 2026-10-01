@@ -29,8 +29,9 @@ use crate::diagnose;
 use crate::localization::{self, LanguageId, Strings};
 use crate::models::AppUsageData;
 use crate::native_interop::{
-    self, TIMER_CLOCK, TIMER_COUNTDOWN, TIMER_MOUSE_CLICK, TIMER_POLL, TIMER_RESET_POLL,
-    TIMER_TRAY_HOVER, TIMER_TRAY_REPOSITION, TIMER_UPDATE_CHECK, TIMER_WINDOW_STATE,
+    self, TIMER_CLOCK, TIMER_COUNTDOWN, TIMER_IDLE_CLEANER, TIMER_MOUSE_CLICK, TIMER_POLL,
+    TIMER_RESET_POLL, TIMER_TRAY_HOVER, TIMER_TRAY_REPOSITION, TIMER_UPDATE_CHECK,
+    TIMER_WINDOW_STATE,
     WM_APP_DISABLE_DIAGNOSTICS, WM_APP_ENABLE_DIAGNOSTICS, WM_APP_OPEN_DASHBOARD, WM_APP_QUIT,
     WM_APP_REFRESH_NOW, WM_APP_SETTINGS_UPDATED, WM_APP_TASKBAR_COLLISION, WM_APP_TRAY,
     WM_APP_USAGE_UPDATED,
@@ -97,6 +98,7 @@ struct AppState {
     accounts: crate::accounts::AccountSettings,
 
     data: Option<AppUsageData>,
+    idle_cleaner: crate::idle_cleaner::IdleCleaner,
 
     poll_interval_ms: u32,
     retry_count: u32,
@@ -582,6 +584,7 @@ fn theme_runtime_from_state(state: &AppState) -> ThemeRuntime {
         .with_poll_state(poll_ok, has_error)
         .with_language(state.language)
         .with_countdown(state.usage_countdown)
+        .with_idle_state(state.idle_cleaner.idle_count(), state.idle_cleaner.running_count())
         .with_nest(nest)
         .with_floating_card_opacity(opacity)
 }
@@ -2089,6 +2092,7 @@ pub fn run() {
                 providers: settings.enabled_providers(),
                 accounts: settings.accounts.clone(),
                 data: None,
+                idle_cleaner: crate::idle_cleaner::IdleCleaner::default(),
                 poll_interval_ms: settings.poll_interval_ms,
                 retry_count: 0,
                 force_notify_auth_error: false,
@@ -2168,6 +2172,7 @@ pub fn run() {
                 .unwrap_or(POLL_15_MIN)
         };
         SetTimer(Some(hwnd), TIMER_POLL, initial_poll_ms, None);
+        SetTimer(Some(hwnd), TIMER_IDLE_CLEANER, 30_000, None);
         sync_window_state_timer(hwnd);
 
         // Watch for explorer.exe restarts so we can re-embed and re-add the tray
