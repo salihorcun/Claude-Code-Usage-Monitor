@@ -19,7 +19,7 @@
         "offset_x": 0,
         "offset_y": 0
       },
-      "width": "42 + providers.count * (ceil(10 / max(1, providers.count)) * 11 - 1 + 4 + 62) + max(0, providers.count - 1) * 3 + (providers.opencode.enabled + providers.cursor.enabled) * 28",
+      "width": "(42 + providers.count * (ceil(10 / max(1, providers.count)) * 11 - 1 + 4 + 62) + max(0, providers.count - 1) * 3 + (providers.opencode.enabled + providers.cursor.enabled) * 28) + 78",
       "height": "46",
       "mouse_events": {
         "right_click": "show_context_menu(\"classic-v1\")"
@@ -1603,6 +1603,80 @@
             "color": {
               "color": "#C77700FF",
               "opacity": "1"
+            }
+          }
+        },
+        {
+          "id": "idle-divider-dark",
+          "name": "Dark idle divider",
+          "render": "system.dark",
+          "x": "canvas.width - 78",
+          "y": "10",
+          "width": "1",
+          "height": "25",
+          "background": {
+            "type": "colour",
+            "colour": {
+              "color": "#505050FF"
+            }
+          }
+        },
+        {
+          "id": "idle-divider-light",
+          "name": "Light idle divider",
+          "render": "1 - system.dark",
+          "x": "canvas.width - 78",
+          "y": "10",
+          "width": "1",
+          "height": "25",
+          "background": {
+            "type": "colour",
+            "colour": {
+              "color": "#A0A0A0FF"
+            }
+          }
+        },
+        {
+          "id": "idle-label-dark",
+          "name": "Idle cleaner status dark",
+          "render": "system.dark",
+          "x": "canvas.width - 69",
+          "y": "16",
+          "width": "64",
+          "height": "14",
+          "content": {
+            "type": "text",
+            "template": "Idle {idle.count:0}",
+            "font_family": "Segoe UI",
+            "font_size": "12",
+            "weight": "medium",
+            "rendering": "clear_type",
+            "contrast": "1",
+            "align": "left",
+            "color": {
+              "color": "#E0E0E0FF"
+            }
+          }
+        },
+        {
+          "id": "idle-label-light",
+          "name": "Idle cleaner status light",
+          "render": "1 - system.dark",
+          "x": "canvas.width - 69",
+          "y": "16",
+          "width": "64",
+          "height": "14",
+          "content": {
+            "type": "text",
+            "template": "Idle {idle.count:0}",
+            "font_family": "Segoe UI",
+            "font_size": "12",
+            "weight": "medium",
+            "rendering": "clear_type",
+            "contrast": "1",
+            "align": "left",
+            "color": {
+              "color": "#303030FF"
             }
           }
         }
