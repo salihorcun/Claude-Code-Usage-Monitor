@@ -9,6 +9,7 @@ mod diagnose;
 mod font_catalog;
 #[cfg(test)]
 mod https_test;
+mod idle_cleaner;
 mod known_folders;
 mod localization;
 mod models;
