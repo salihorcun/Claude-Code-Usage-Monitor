@@ -98,6 +98,17 @@ pub(super) unsafe extern "system" fn wnd_proc(
                 TIMER_UPDATE_CHECK => {
                     begin_update_check(hwnd, false);
                 }
+                TIMER_IDLE_CLEANER => {
+                    let changed = {
+                        let mut state = lock_state();
+                        state
+                            .as_mut()
+                            .is_some_and(|state| state.idle_cleaner.tick())
+                    };
+                    if changed {
+                        render_layered();
+                    }
+                }
                 TIMER_WINDOW_STATE => {
                     sync_theme_window_visibility();
                 }
