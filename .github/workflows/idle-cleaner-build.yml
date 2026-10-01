@@ -1,0 +1,23 @@
+name: Build Idle Cleaner
+
+on:
+  push:
+    branches:
+      - feature/idle-cleaner
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+      - name: Build release
+        run: cargo build --release
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: Claude-Code-Usage-Monitor-Idle-Cleaner
+          path: target/release/claude-code-usage-monitor.exe
